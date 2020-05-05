@@ -9,3 +9,12 @@ cmake -B bin
 cmake --build bin
 ./bin/app
 ```
+
+Also works with WASM
+```
+git clone https://github.com/MoAlyousef/imgui-cmake
+cd imgui-cmake
+git submodule update --init --recursive
+emcmake cmake -B bin
+cmake --build bin
+```
