@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_opengles2.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef EMSCRIPTEN
 #include "imgui_impl_opengl3.h"
