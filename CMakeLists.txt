@@ -41,7 +41,6 @@ set(IMGUI_SRCS imgui/imgui.cpp
 set(INCS ${CMAKE_CURRENT_LIST_DIR} 
     imgui
     imgui/examples
-    sdl2/include
     imgui/examples/libs/gl3w
     )
 
@@ -58,6 +57,7 @@ else()
     add_subdirectory(sdl2)
     set(CMAKE_CXX_FLAGS -DIMGUI_IMPL_OPENGL_LOADER_GL3W)
     set(IMGUI_SRCS ${IMGUI_SRCS} imgui/examples/imgui_impl_opengl2.cpp imgui/examples/libs/gl3w/GL/gl3w.c)
+    set(INCS ${INCS} sdl2/include)
     set(LIBS ${LIBS} SDL2-static SDL2main)
 endif()
 
@@ -69,8 +69,8 @@ set(PROJ_SRCS src/main.cpp)
 add_executable(${PROJECT_NAME} ${GUI_TYPE} ${PROJ_SRCS} ${IMGUI_SRCS})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX .html COMPILE_FLAGS "-DEMSCRIPTEN" LINK_FLAGS 
-        "-s WASM=1 -s USE_SDL=2 -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wl,--shared-memory,--no-check-features")
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX .html COMPILE_FLAGS "-DEMSCRIPTEN -s USE_SDL=2" LINK_FLAGS 
+        "-s WASM=1 -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wl,--shared-memory,--no-check-features")
 endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCS})
