@@ -9,14 +9,8 @@ set(OpenGL_GL_PREFERENCE GLVND)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SDL_PTHREADS_ENABLED_BY_DEFAULT ON)
 
-# Set some Win32 Specific Settings
-IF(WIN32)
-    SET(GUI_TYPE WIN32)
-ENDIF(WIN32)
-
 # Set some Apple MacOS Specific settings
 IF (APPLE)
-    SET(GUI_TYPE MACOSX_BUNDLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJ_VERSION})
     set(MACOSX_BUNDLE_COPYRIGHT "Copyright 2020" ${AUTHOR})
@@ -50,7 +44,8 @@ set(LIBS ${OPENGL_opengl_LIBRARY}
     )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set(LIBS ${LIBS} SDL2-mt)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-DEMSCRIPTEN -s USE_SDL=2")
+    set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} "-s WASM=1 -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wl,--shared-memory,--no-check-features")
     set(IMGUI_SRCS ${IMGUI_SRCS} imgui/examples/imgui_impl_opengl3.cpp) 
 else()
     add_subdirectory(sdl2)
@@ -65,11 +60,10 @@ find_package(Threads REQUIRED)
 
 set(PROJ_SRCS src/main.cpp)
 
-add_executable(${PROJECT_NAME} ${GUI_TYPE} ${PROJ_SRCS} ${IMGUI_SRCS})
+add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${PROJ_SRCS} ${IMGUI_SRCS})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX .html COMPILE_FLAGS "-DEMSCRIPTEN -s USE_SDL=2" LINK_FLAGS 
-        "-s WASM=1 -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wl,--shared-memory,--no-check-features")
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX .html)
 endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCS})
