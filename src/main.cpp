@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define FONT_PATH "fonts/FreeSans.ttf"
+
 #ifdef EMSCRIPTEN
 #include "imgui_impl_opengl3.h"
 #include <emscripten.h>
@@ -110,7 +112,7 @@ int main(int, char **) {
   // - Emscripten allows preloading a file or folder to be accessible at
   // runtime. See Makefile for details.
   // io.Fonts->AddFontDefault();
-  io.Fonts->AddFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f);
+  io.Fonts->AddFontFromFileTTF(FONT_PATH, 16.0f);
   // io.Fonts->AddFontFromFileTTF("fonts/Cousine-Regular.ttf", 15.0f);
   // io.Fonts->AddFontFromFileTTF("fonts/DroidSans.ttf", 16.0f);
   // io.Fonts->AddFontFromFileTTF("fonts/ProggyTiny.ttf", 10.0f);
