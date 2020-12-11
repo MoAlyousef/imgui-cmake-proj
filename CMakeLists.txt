@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(app)
+project(myapp)
 set(AUTHOR "Mohammed Alyousef")
 set(PROJ_VERSION 0.1.0)
 
@@ -32,7 +32,9 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(FATAL_ERROR "Prevented in-tree build. Please create a build directory outside of the source directory and call cmake from there.")
 endif()
 
-find_package(OpenGL REQUIRED)
+if (NOT(ANDROID))
+    find_package(OpenGL REQUIRED)
+endif()
 find_package(Threads REQUIRED)
 
 set(PROJ_SRCS src/main.cpp)
@@ -54,12 +56,17 @@ set(INCS
     ${imgui_SOURCE_DIR}/examples/libs/gl3w
     )
 
-set(LIBS 
-    ${OPENGL_opengl_LIBRARY}
-    ${OPENGL_glx_LIBRARY}
+set(LIBS
     ${CMAKE_DL_LIBS}
     Threads::Threads
     )
+
+if (NOT(ANDROID))
+    set(LIBS ${LIBS} 
+        ${OPENGL_opengl_LIBRARY}
+        ${OPENGL_glx_LIBRARY}
+        )
+endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-DEMSCRIPTEN -s USE_SDL=2 -s NO_FILESYSTEM=0")
@@ -71,13 +78,23 @@ else()
         URL https://github.com/spurious/SDL-mirror/archive/master.zip
     )
     FetchContent_MakeAvailable(SDL2)
-    set(CMAKE_CXX_FLAGS -DIMGUI_IMPL_OPENGL_LOADER_GL3W)
-    set(IMGUI_SRCS ${IMGUI_SRCS} ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp ${imgui_SOURCE_DIR}/examples/libs/gl3w/GL/gl3w.c)
-    set(INCS ${INCS} sdl2/include)
-    set(LIBS ${LIBS} SDL2-static SDL2main ${OPENGL_gl_LIBRARY})
+    if (ANDROID)
+        add_definitions(-DIMGUI_IMPL_OPENGL_ES2)
+        set(IMGUI_SRCS ${IMGUI_SRCS} ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
+    else()
+        add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GL3W)
+        set(IMGUI_SRCS ${IMGUI_SRCS} ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp ${imgui_SOURCE_DIR}/examples/libs/gl3w/GL/gl3w.c)
+        set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY})
+    endif()
+    set(LIBS ${LIBS} SDL2-static SDL2main)
 endif()
 
-add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${PROJ_SRCS} ${IMGUI_SRCS})
+if (ANDROID)
+    add_library(${PROJECT_NAME} SHARED ${PROJ_SRCS} ${IMGUI_SRCS})
+else()
+    add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${PROJ_SRCS} ${IMGUI_SRCS})
+endif()
+
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")

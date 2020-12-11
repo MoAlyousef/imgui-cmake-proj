@@ -5,28 +5,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FONT_PATH "fonts/FreeSans.ttf"
-
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 #include "imgui_impl_opengl3.h"
 #include <emscripten.h>
+#elif defined(__ANDROID__)
+#include "imgui_impl_opengl3.h"
+#else
+#include "imgui_impl_opengl2.h"
+#endif
+
+#if defined(EMSCRIPTEN) || defined(__ANDROID__)
 #define OGL_INIT ImGui_ImplOpenGL3_Init
 #define OGL_NEW_FRAME ImGui_ImplOpenGL3_NewFrame
 #define OGL_RENDER_NEW_DATA ImGui_ImplOpenGL3_RenderDrawData
 #else
-#include "imgui_impl_opengl2.h"
 #define OGL_INIT ImGui_ImplOpenGL2_Init
 #define OGL_NEW_FRAME ImGui_ImplOpenGL2_NewFrame
 #define OGL_RENDER_NEW_DATA ImGui_ImplOpenGL2_RenderDrawData
 #endif
+
+#define FONT_PATH "fonts/FreeSans.ttf"
 
 SDL_Window *g_Window = NULL;
 SDL_GLContext g_GLContext = NULL;
 
 void main_loop(void *);
 
-int main(int, char **) {
 
+int main(int, char **) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
         printf("Error: %s\n", SDL_GetError());
         return -1;
