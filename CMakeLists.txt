@@ -55,7 +55,8 @@ set(INCS
     )
 
 set(LIBS 
-    ${OPENGL_opengl_LIBRARY} 
+    ${OPENGL_opengl_LIBRARY}
+    ${OPENGL_gl_LIBRARY}
     ${OPENGL_glx_LIBRARY}
     ${CMAKE_DL_LIBS}
     Threads::Threads
