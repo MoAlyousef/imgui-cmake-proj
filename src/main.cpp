@@ -2,6 +2,7 @@
 #include <SDL_video.h>
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -33,7 +34,7 @@ SDL_GLContext g_GLContext = NULL;
 
 void main_loop(void *);
 
-void show_gui(const ImVec4 &);
+void show_gui();
 
 int main(int, char **) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
@@ -104,7 +105,7 @@ void main_loop(void *arg) {
     ImGui_ImplSDL2_NewFrame(g_Window);
     ImGui::NewFrame();
 
-    show_gui(clear_color);
+    show_gui();
 
     ImGui::Render();
     SDL_GL_MakeCurrent(g_Window, g_GLContext);
@@ -115,21 +116,148 @@ void main_loop(void *arg) {
     SDL_GL_SwapWindow(g_Window);
 }
 
-void show_gui(const ImVec4 &color) {
-    static float f = 0.0f;
-    static int counter = 0;
+void show_gui() {
+    static bool show_hem_size_calc = false;
+    static bool show_stereo_calc = false;
 
-    ImGui::Begin("Contact!");
+    ImGui::SetNextWindowSize(ImVec2(300, 200));
 
-    ImGui::Text("This is some useful text.");
+    ImGui::Begin("Main Menu");
 
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-    ImGui::ColorEdit3("clear color", (float *)&color);
-    ImGui::PushItemWidth(100.0f);
-    if (ImGui::Button("Button"))
-        counter++;
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", counter);
+    ImGui::Text("Choose a calculator:");
+
+    ImGui::NewLine();
+
+    ImGui::Checkbox("Hematoma Size Calculator", &show_hem_size_calc);
+
+    ImGui::NewLine();
+
+    ImGui::Separator();
+
+    ImGui::NewLine();
+
+    ImGui::Checkbox("Stereotactic Calculator", &show_stereo_calc);
 
     ImGui::End();
+
+    if (show_hem_size_calc) {
+        static double size = 0;
+        static int x = 0;
+        static int y = 0;
+        static int z = 0;
+
+        ImGui::SetNextWindowSize(ImVec2(400, 300));
+
+        ImGui::Begin("Hematoma size calculator", &show_hem_size_calc);
+
+        ImGui::Text("Enter hematoma size:");
+
+        ImGui::Separator();
+
+        ImGui::NewLine();
+
+        ImGui::InputInt("X axis", &x);
+
+        ImGui::NewLine();
+
+        ImGui::InputInt("Y axis", &y);
+
+        ImGui::NewLine();
+
+        ImGui::InputInt("Z axis", &z);
+
+        ImGui::NewLine();
+
+        ImGui::Separator();
+
+        ImGui::NewLine();
+
+        if (ImGui::Button("Calculate"))
+            size = static_cast<double>(x + y + z) / 3;
+
+        ImGui::NewLine();
+
+        ImGui::Text("Size = %lf", size);
+
+        ImGui::NewLine();
+
+        ImGui::End();
+    }
+
+    if (show_stereo_calc) {
+        static int ring = 0;
+        static int arc = 0;
+        static int e_x = 0;
+        static int e_y = 0;
+        static int e_z = 0;
+        static int t_x = 0;
+        static int t_y = 0;
+        static int t_z = 0;
+
+        ImGui::SetNextWindowSize(ImVec2(480, 380));
+
+        ImGui::Begin("Stereotactic calculator", &show_stereo_calc);
+
+        ImGui::Text("Enter Axes:");
+
+        ImGui::Separator();
+
+        ImGui::NewLine();
+
+        ImGui::PushItemWidth(150);
+
+        ImGui::InputInt("Entry X", &e_x);
+
+        ImGui::SameLine(200, 50);
+
+        ImGui::InputInt("Target X", &t_x);
+
+        ImGui::NewLine();
+
+        ImGui::InputInt("Entry Y", &e_y);
+
+        ImGui::SameLine(200, 50);
+
+        ImGui::InputInt("Target Y", &t_y);
+
+        ImGui::NewLine();
+
+        ImGui::InputInt("Entry Z", &e_z);
+
+        ImGui::SameLine(200, 50);
+
+        ImGui::InputInt("Target Z", &t_z);
+
+        ImGui::NewLine();
+
+        ImGui::Separator();
+
+        ImGui::NewLine();
+
+        ImGui::PopItemWidth();
+
+        if (ImGui::Button("Calculate")) {
+            double Dx = t_x - e_x;
+            double Dy = t_y - e_y;
+            double Dz = t_z - e_z;
+            double Dysq = pow(Dy, 2.0);
+            double Dzsq = pow(Dz, 2.0);
+            double M1M2 = Dysq + Dzsq;
+            double rootcal = sqrt(M1M2);
+            arc = 180.00 - (atan2(rootcal, Dx) * 180 / M_PI);
+            ring = (atan(Dy / Dz) * 180 / M_PI) + 90;
+        }
+
+        ImGui::NewLine();
+
+        ImGui::Text("Ring = %d", ring);
+
+        ImGui::NewLine();
+
+        ImGui::Text("Arc = %d", arc);
+
+        ImGui::NewLine();
+
+        ImGui::End();
+    }
 }
