@@ -1,7 +1,7 @@
-#include "imgui.h"
-#include "imgui_impl_sdl.h"
 #include <SDL.h>
-#include <SDL_opengles2.h>
+#include <SDL_video.h>
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,10 +15,12 @@
 #endif
 
 #if defined(EMSCRIPTEN) || defined(__ANDROID__)
+#include <SDL_opengles2.h>
 #define OGL_INIT ImGui_ImplOpenGL3_Init
 #define OGL_NEW_FRAME ImGui_ImplOpenGL3_NewFrame
 #define OGL_RENDER_NEW_DATA ImGui_ImplOpenGL3_RenderDrawData
 #else
+#include <SDL_opengl.h>
 #define OGL_INIT ImGui_ImplOpenGL2_Init
 #define OGL_NEW_FRAME ImGui_ImplOpenGL2_NewFrame
 #define OGL_RENDER_NEW_DATA ImGui_ImplOpenGL2_RenderDrawData
@@ -31,6 +33,7 @@ SDL_GLContext g_GLContext = NULL;
 
 void main_loop(void *);
 
+void show_gui(const ImVec4 &);
 
 int main(int, char **) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
@@ -55,7 +58,7 @@ int main(int, char **) {
     SDL_WindowFlags window_flags =
         (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     g_Window = SDL_CreateWindow("Dear ImGui SDL example", SDL_WINDOWPOS_CENTERED,
-                                SDL_WINDOWPOS_CENTERED, 600, 400, window_flags);
+                                SDL_WINDOWPOS_CENTERED, 1200, 800, window_flags);
     g_GLContext = SDL_GL_CreateContext(g_Window);
     if (!g_GLContext) {
         fprintf(stderr, "Failed to initialize GL context!\n");
@@ -82,12 +85,12 @@ int main(int, char **) {
     while (!done)
         main_loop(NULL);
 #endif
+    return 0;
 }
 
 void main_loop(void *arg) {
     ImGuiIO &io = ImGui::GetIO();
     IM_UNUSED(arg);
-
     static ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 
     SDL_Event event;
@@ -101,29 +104,7 @@ void main_loop(void *arg) {
     ImGui_ImplSDL2_NewFrame(g_Window);
     ImGui::NewFrame();
 
-    {
-        static float f = 0.0f;
-        static int counter = 0;
-        static bool open = true;
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::SetNextWindowSize(ImVec2(600, 400));
-
-        ImGui::Begin("Hello, world!", &open,
-                     ImGuiWindowFlags_Modal | ImGuiWindowFlags_NoTitleBar |
-                         ImGuiWindowFlags_NoResize);
-
-        ImGui::Text("This is some useful text.");
-
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("clear color", (float *)&clear_color);
-        ImGui::PushItemWidth(100.0f);
-        if (ImGui::Button("Button"))
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::End();
-    }
+    show_gui(clear_color);
 
     ImGui::Render();
     SDL_GL_MakeCurrent(g_Window, g_GLContext);
@@ -132,4 +113,23 @@ void main_loop(void *arg) {
     glClear(GL_COLOR_BUFFER_BIT);
     OGL_RENDER_NEW_DATA(ImGui::GetDrawData());
     SDL_GL_SwapWindow(g_Window);
+}
+
+void show_gui(const ImVec4 &color) {
+    static float f = 0.0f;
+    static int counter = 0;
+
+    ImGui::Begin("Contact!");
+
+    ImGui::Text("This is some useful text.");
+
+    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+    ImGui::ColorEdit3("clear color", (float *)&color);
+    ImGui::PushItemWidth(100.0f);
+    if (ImGui::Button("Button"))
+        counter++;
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", counter);
+
+    ImGui::End();
 }
