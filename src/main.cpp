@@ -110,14 +110,12 @@ int main(int, char **) {
   // - Emscripten allows preloading a file or folder to be accessible at
   // runtime. See Makefile for details.
   // io.Fonts->AddFontDefault();
-#ifndef IMGUI_DISABLE_FILE_FUNCTIONS
   io.Fonts->AddFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f);
   // io.Fonts->AddFontFromFileTTF("fonts/Cousine-Regular.ttf", 15.0f);
   // io.Fonts->AddFontFromFileTTF("fonts/DroidSans.ttf", 16.0f);
   // io.Fonts->AddFontFromFileTTF("fonts/ProggyTiny.ttf", 10.0f);
   // ImFont* font = io.Fonts->AddFontFromFileTTF("fonts/ArialUni.ttf", 18.0f,
   // NULL, io.Fonts->GetGlyphRangesJapanese()); IM_ASSERT(font != NULL);
-#endif
 
 // This function call won't return, and will engage in an infinite loop,
 // processing events from the browser, and dispatching them.
@@ -139,7 +137,7 @@ void main_loop(void *arg) {
   // the example terse.
   static bool show_demo_window = true;
   static bool show_another_window = false;
-  static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  static ImVec4 clear_color = ImVec4(1.0f, 1.0f, 1.0f, 1.00f);
 
   // Poll and handle events (inputs, window resize, etc.)
   // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell
@@ -153,7 +151,7 @@ void main_loop(void *arg) {
   while (SDL_PollEvent(&event)) {
     ImGui_ImplSDL2_ProcessEvent(&event);
     if (event.type == SDL_QUIT)
-        exit(0);
+      exit(0);
   }
 
   // Start the Dear ImGui frame
