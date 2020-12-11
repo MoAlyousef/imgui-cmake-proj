@@ -56,7 +56,6 @@ set(INCS
 
 set(LIBS 
     ${OPENGL_opengl_LIBRARY}
-    ${OPENGL_gl_LIBRARY}
     ${OPENGL_glx_LIBRARY}
     ${CMAKE_DL_LIBS}
     Threads::Threads
@@ -75,7 +74,7 @@ else()
     set(CMAKE_CXX_FLAGS -DIMGUI_IMPL_OPENGL_LOADER_GL3W)
     set(IMGUI_SRCS ${IMGUI_SRCS} ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl2.cpp ${imgui_SOURCE_DIR}/examples/libs/gl3w/GL/gl3w.c)
     set(INCS ${INCS} sdl2/include)
-    set(LIBS ${LIBS} SDL2-static SDL2main)
+    set(LIBS ${LIBS} SDL2-static SDL2main ${OPENGL_gl_LIBRARY})
 endif()
 
 add_executable(${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${PROJ_SRCS} ${IMGUI_SRCS})
