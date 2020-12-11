@@ -10,7 +10,7 @@ cmake --build bin --parallel
 ./bin/app
 ```
 
-Also works with WASM
+For emscripten:
 ```
 git clone https://github.com/MoAlyousef/imgui-cmake-proj
 cd imgui-cmake-proj
