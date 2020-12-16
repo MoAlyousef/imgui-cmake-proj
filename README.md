@@ -7,7 +7,7 @@ git clone https://github.com/MoAlyousef/imgui-cmake-proj
 cd imgui-cmake-proj
 cmake -B bin
 cmake --build bin --parallel
-./bin/myapp
+./bin/calc
 ```
 
 For emscripten:
@@ -16,5 +16,5 @@ git clone https://github.com/MoAlyousef/imgui-cmake-proj
 cd imgui-cmake-proj
 emcmake cmake -B bin
 cmake --build bin --parallel
-emrun bin/myapp.html
+emrun bin/calc.html
 ```
