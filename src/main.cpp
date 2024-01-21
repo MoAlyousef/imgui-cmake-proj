@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <SDL_video.h>
 #include <imgui.h>
-#include <imgui_impl_sdl.h>
+#include <imgui_impl_sdl2.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,13 +67,12 @@ int main(int, char **) {
     }
     SDL_GL_SetSwapInterval(1);
 
-    IMGUI_CHECKVERSION();
+    IMGUI_CHECKVERSION();    
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF(FONT_PATH, 16.0f);
     io.IniFilename = NULL;
     (void)io;
-
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL2_InitForOpenGL(g_Window, g_GLContext);
@@ -106,7 +105,6 @@ void main_loop(void *arg) {
     ImGui::NewFrame();
 
     show_gui();
-
     ImGui::Render();
     SDL_GL_MakeCurrent(g_Window, g_GLContext);
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
@@ -119,25 +117,15 @@ void main_loop(void *arg) {
 void show_gui() {
     static bool show_hem_size_calc = false;
     static bool show_stereo_calc = false;
-
     ImGui::SetNextWindowSize(ImVec2(300, 200));
-
     ImGui::Begin("Main Menu");
-
     ImGui::Text("Choose a calculator:");
-
     ImGui::NewLine();
-
     ImGui::Checkbox("Hematoma Size Calculator", &show_hem_size_calc);
-
     ImGui::NewLine();
-
     ImGui::Separator();
-
     ImGui::NewLine();
-
     ImGui::Checkbox("Stereotactic Calculator", &show_stereo_calc);
-
     ImGui::End();
 
     if (show_hem_size_calc) {
@@ -145,42 +133,25 @@ void show_gui() {
         static int x = 0;
         static int y = 0;
         static int z = 0;
-
         ImGui::SetNextWindowSize(ImVec2(400, 300));
-
         ImGui::Begin("Hematoma size calculator", &show_hem_size_calc);
-
         ImGui::Text("Enter hematoma size:");
-
         ImGui::Separator();
-
         ImGui::NewLine();
-
         ImGui::InputInt("X axis", &x);
-
         ImGui::NewLine();
-
         ImGui::InputInt("Y axis", &y);
-
         ImGui::NewLine();
-
         ImGui::InputInt("Z axis", &z);
-
         ImGui::NewLine();
-
         ImGui::Separator();
-
         ImGui::NewLine();
 
         if (ImGui::Button("Calculate"))
             size = static_cast<double>(x + y + z) / 3;
-
         ImGui::NewLine();
-
         ImGui::Text("Size = %lf", size);
-
         ImGui::NewLine();
-
         ImGui::End();
     }
 
@@ -193,47 +164,26 @@ void show_gui() {
         static int t_x = 0;
         static int t_y = 0;
         static int t_z = 0;
-
         ImGui::SetNextWindowSize(ImVec2(480, 380));
-
         ImGui::Begin("Stereotactic calculator", &show_stereo_calc);
-
         ImGui::Text("Enter Axes:");
-
         ImGui::Separator();
-
         ImGui::NewLine();
-
         ImGui::PushItemWidth(150);
-
         ImGui::InputInt("Entry X", &e_x);
-
         ImGui::SameLine(200, 50);
-
         ImGui::InputInt("Target X", &t_x);
-
         ImGui::NewLine();
-
         ImGui::InputInt("Entry Y", &e_y);
-
         ImGui::SameLine(200, 50);
-
         ImGui::InputInt("Target Y", &t_y);
-
         ImGui::NewLine();
-
         ImGui::InputInt("Entry Z", &e_z);
-
         ImGui::SameLine(200, 50);
-
         ImGui::InputInt("Target Z", &t_z);
-
         ImGui::NewLine();
-
         ImGui::Separator();
-
         ImGui::NewLine();
-
         ImGui::PopItemWidth();
 
         if (ImGui::Button("Calculate")) {
@@ -247,17 +197,11 @@ void show_gui() {
             arc = 180.00 - (atan2(rootcal, Dx) * 180 / M_PI);
             ring = (atan(Dy / Dz) * 180 / M_PI) + 90;
         }
-
         ImGui::NewLine();
-
         ImGui::Text("Ring = %d", ring);
-
         ImGui::NewLine();
-
         ImGui::Text("Arc = %d", arc);
-
         ImGui::NewLine();
-
         ImGui::End();
     }
 }

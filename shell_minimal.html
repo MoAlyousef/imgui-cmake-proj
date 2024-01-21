@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>My FLTK App</title>
+  </head>
+  <body>
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <script type='text/javascript'>
+      var Module = {
+        canvas: (() => {
+          var canvas = document.getElementById('canvas');
+          canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+          return canvas;
+        })(),
+      };
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>
